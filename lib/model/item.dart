@@ -1,13 +1,13 @@
 class Item {
-  int id;
-  String title;
-  double price;
-  String imageURL;
+  final int id;
+  final String title;
+  final double price;
+  final String imageURL;
 
   Item({
-    id,
-    title,
-    price,
-    imageURL,
+    this.id,
+    this.title,
+    this.price,
+    this.imageURL,
   });
 }

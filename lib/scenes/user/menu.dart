@@ -2,16 +2,23 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:radius/widgets/menu/provincelist.widget.dart';
-import 'package:radius/widgets/menu/popularlist.widget.dart';
+// import 'package:radius/widgets/menu/popularlist.widget.dart';
 import 'package:radius/model/resturant.dart';
 
 class Menu extends StatelessWidget {
-  Resturant resturant;
-  Menu({Key key, @required Resturant resturant}) : super(key: key);
+  final Resturant resturant;
+  Menu({
+    Key key,
+    @required this.resturant,
+  }) : super(key: key);
+
+  // Menu({this.resturant = resturant});
 
   @override
   Widget build(BuildContext context) {
-    final title = resturant.title;
+    final String title = resturant.title;
+
+    print(resturant.items[0].imageURL);
 
     return MaterialApp(
       title: title,
@@ -47,7 +54,7 @@ class Menu extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     Image.network(
-                      '',
+                      resturant.imageURL,
                       fit: BoxFit.cover,
                     ),
                     const DecoratedBox(
@@ -91,28 +98,43 @@ class Menu extends StatelessWidget {
                       vertical: 2.5,
                       horizontal: 5,
                     ),
-                    // child: SizedBox(
-                    //   height: 100,
                     child: Card(
-                      elevation: 2.5,
+                      elevation: 1,
                       semanticContainer: true,
-                      child: ListTile(
-                        contentPadding: EdgeInsets.only(right: 10),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(4.0),
-                          child: Image.network(resturant.imageURL),
-                        ),
-                        title: Text(resturants[0].items[index].title),
-                        onTap: () => {Navigator.pop(context)},
-                        trailing:
-                            Text(resturants[0].items[index].price.toString()),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 100,
+                            child: Image.network(
+                              resturant.items[index].imageURL,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 5,
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Text(
+                                resturant.items[index].title,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              resturant.items[index].price.toString(),
+                              style: TextStyle(fontSize: 24),
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    // ),
                   );
                 },
-                // Builds 1000 ListTiles
-                childCount: resturants[0].items.length,
+                childCount: resturant.items.length,
               ),
             ),
           ],

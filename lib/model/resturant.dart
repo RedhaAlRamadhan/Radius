@@ -1,11 +1,11 @@
 import 'item.dart';
 
 class Resturant {
-  int id;
-  String title;
-  String uuid;
-  String imageURL;
-  List<Item> items;
+  final int id;
+  final String title;
+  final String uuid;
+  final String imageURL;
+  final List<Item> items;
   bool isSaved = false;
 
   Resturant({
@@ -14,7 +14,7 @@ class Resturant {
     this.uuid,
     this.imageURL,
     this.items,
-    this.isSaved,
+    isSaved,
   });
 
   Map toJson() => {

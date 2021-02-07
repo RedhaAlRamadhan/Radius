@@ -4,9 +4,10 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
 import 'dart:io' show Platform;
-// import 'package:flutter_map/flutter_map.dart';
+// import 'p:flutter_map/flutter_map.dart';
 // import "package:latlong/latlong.dart" as latLng;
 import 'package:flutter_svg/svg.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 // import 'package:page_view_indicators/circle_page_indicator.dart';
 
 import 'package:flutter/foundation.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:radius/model/resturant.dart';
-// import 'package:radius/scenes/user/menu.dart';
+import 'package:radius/scenes/user/menu.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -144,7 +145,7 @@ class _Home extends State<Home> with WidgetsBindingObserver {
             });
             print(_beacons.length);
 
-            _beacons.sort(_compareParameters);
+            // _beacons.sort(_compareParameters);
 
             for (var _beacon in _beacons) {
               for (var _resturant in resturants) {
@@ -262,70 +263,6 @@ class _Home extends State<Home> with WidgetsBindingObserver {
     );
   }
 }
-
-// class CreateResturants extends StatelessWidget {
-//   var resturants = <Beacon>[];
-//   const CreateResturants({
-//     Key key,
-//     @required this.resturants,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     for (var _resturant in resturants) {
-//       if (_resturant.uuid == uuid) {
-//         return Container(
-//           child: Column(
-//             children: [
-//               Container(
-//                 margin: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-//                 decoration: BoxDecoration(
-//                   boxShadow: [
-//                     BoxShadow(
-//                       color: Colors.grey.withOpacity(0.5),
-//                       blurRadius: 8,
-//                       offset: Offset(-2, 0),
-//                       spreadRadius: 2.0,
-//                     ),
-//                   ],
-//                 ),
-//                 child: BackgroundImage(image: _resturant.imageURL),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Text(
-//                 _resturant.title,
-//                 style: TextStyle(
-//                   fontSize: 35,
-//                   color: Colors.black.withOpacity(0.8),
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//               ElevatedButton(
-//                 child: Text(
-//                   'Open Menu 45%',
-//                 ),
-//                 onPressed: () {
-//                   Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                         builder: (context) => Menu(
-//                               resturant: _resturant,
-//                             )),
-//                   );
-//                 },
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//             ],
-//           ),
-//         );
-//       }
-//     }
-//   }
-// }
 
 class BackgroundImage extends StatelessWidget {
   final String image;
@@ -489,17 +426,32 @@ class _RecentListState extends State<ResturantList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      child: AspectRatio(
-        aspectRatio: 1.5,
-        child: PageView.builder(
-          controller: _pageController,
-          itemCount: list.length,
-          itemBuilder: (context, index) => buildResturantSlider(index),
-          // onPageChanged: (int index) {}
-        ),
-      ),
-    );
+        color: Colors.white,
+        child: Stack(
+          children: [
+            AspectRatio(
+              aspectRatio: 1.5,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: list.length,
+                itemBuilder: (context, index) => buildResturantSlider(index),
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: Center(
+                  child: SmoothPageIndicator(
+                    controller: _pageController,
+                    count: list.length,
+                    effect: WormEffect(
+                        spacing: 8.0,
+                        dotWidth: 10.0,
+                        dotHeight: 10.0,
+                        activeDotColor: Colors.black),
+                  ),
+                ))
+          ],
+        ));
   }
 
   Widget buildResturantSlider(int index) {
@@ -510,7 +462,13 @@ class _RecentListState extends State<ResturantList> {
         widget.list[index].isSaved = !widget.list[index].isSaved;
         setState(() {});
       },
-      onPress: () {},
+      onPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Menu(resturant: list[index])),
+        );
+        // print(list[index]);
+      },
     );
   }
 }
