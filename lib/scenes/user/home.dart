@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
 import 'dart:io' show Platform;
-// import 'p:flutter_map/flutter_map.dart';
-// import "package:latlong/latlong.dart" as latLng;
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:latlong/latlong.dart' as latLng;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 // import 'package:page_view_indicators/circle_page_indicator.dart';
 
@@ -172,19 +172,19 @@ class _Home extends State<Home> with WidgetsBindingObserver {
     }
   }
 
-  int _compareParameters(Beacon a, Beacon b) {
-    int compare = a.proximityUUID.compareTo(b.proximityUUID);
+  // int _compareParameters(Beacon a, Beacon b) {
+  //   int compare = a.proximityUUID.compareTo(b.proximityUUID);
 
-    if (compare == 0) {
-      compare = a.major.compareTo(b.major);
-    }
+  //   if (compare == 0) {
+  //     compare = a.major.compareTo(b.major);
+  //   }
 
-    if (compare == 0) {
-      compare = a.minor.compareTo(b.minor);
-    }
+  //   if (compare == 0) {
+  //     compare = a.minor.compareTo(b.minor);
+  //   }
 
-    return compare;
-  }
+  //   return compare;
+  // }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -220,45 +220,64 @@ class _Home extends State<Home> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Center(
-        child: Column(
-          verticalDirection: VerticalDirection.up,
-          children: [
-            found
-                ? SingleChildScrollView(
-                    child: Container(
-                      width: size.width,
-                      height: size.height,
-                      child: Column(
-                        verticalDirection: VerticalDirection.up,
-                        children: <Widget>[
-                          ResturantList(
-                            list: resturantsList,
+      body: Stack(
+        children: [
+          FlutterMap(
+            options: MapOptions(
+              center: latLng.LatLng(25.448554, 49.584898),
+              zoom: 13.0,
+            ),
+            layers: [
+              TileLayerOptions(
+                  urlTemplate:
+                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c']),
+              MarkerLayerOptions(
+                markers: [],
+              ),
+            ],
+          ),
+          Center(
+            child: Column(
+              verticalDirection: VerticalDirection.up,
+              children: [
+                found
+                    ? SingleChildScrollView(
+                        child: Container(
+                          width: size.width,
+                          height: size.height,
+                          child: Column(
+                            verticalDirection: VerticalDirection.up,
+                            children: <Widget>[
+                              ResturantList(
+                                list: resturantsList,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          Container(
+                            child: Image.asset(
+                              "assets/gif/loader.gif",
+                              width: 100,
+                              height: 100,
+                            ),
+                          ),
+                          // Text(
+                          //   'Scaning',
+                          //   style: TextStyle(fontSize: 30),
+                          // ),
+                          SizedBox(
+                            height: 30,
                           ),
                         ],
                       ),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      Container(
-                        child: Image.asset(
-                          "assets/gif/loader.gif",
-                          width: 100,
-                          height: 100,
-                        ),
-                      ),
-                      // Text(
-                      //   'Scaning',
-                      //   style: TextStyle(fontSize: 30),
-                      // ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                    ],
-                  ),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -304,7 +323,7 @@ class ResturantCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: this.onPress,
+      onTap: (resturant.avaliable) ? this.onPress : () {},
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
         decoration: BoxDecoration(
@@ -321,19 +340,31 @@ class ResturantCard extends StatelessWidget {
           fit: StackFit.expand,
           children: <Widget>[
             BackgroundImage(image: resturant.imageURL),
-            const DecoratedBox(
+            DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
-                gradient: LinearGradient(
-                  begin: Alignment(0.0, 0.8),
-                  end: Alignment(0.0, 0.0),
-                  colors: <Color>[
-                    Color(0x90000000),
-                    Color(0x00000000),
-                  ],
-                ),
+                gradient: (resturant.avaliable)
+                    ? LinearGradient(
+                        begin: Alignment(0.0, 0.8),
+                        end: Alignment(0.0, 0.0),
+                        colors: <Color>[
+                          Color(0x90000000),
+                          Color(0x00000000),
+                        ],
+                      )
+                    : null,
+                color: (resturant.avaliable) ? null : Color(0xbb5e5e5e),
               ),
             ),
+            (resturant.avaliable)
+                ? Container()
+                : Positioned(
+                    top: 1,
+                    left: 10,
+                    child: Chip(
+                      label: Text('Unavailable'),
+                    ),
+                  ),
             BookmarkButton(
               active: resturant.isSaved,
               onPress: this.onSaved,
@@ -382,7 +413,7 @@ class BookmarkButton extends StatelessWidget {
             "assets/icons/heart.svg",
             color: active ? Colors.red : Colors.black.withOpacity(0.6),
           ),
-          onPressed: () {},
+          onPressed: onPress,
         ),
       ),
     );
@@ -459,8 +490,9 @@ class _RecentListState extends State<ResturantList> {
       resturant: widget.list[index],
       isSaved: widget.list[index].isSaved,
       onSaved: () {
-        widget.list[index].isSaved = !widget.list[index].isSaved;
-        setState(() {});
+        setState(() {
+          widget.list[index].isSaved = !(widget.list[index].isSaved);
+        });
       },
       onPress: () {
         Navigator.push(
