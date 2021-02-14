@@ -1,9 +1,13 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:radius/model/resturant.dart';
 import 'package:radius/scenes/user/menu.dart';
 import 'package:radius/scenes/user/home.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MaterialApp(
     title: 'Navigation Basics',
     home: MyApp(),
@@ -57,7 +61,10 @@ class MyApp extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Menu()),
+                        MaterialPageRoute(
+                            builder: (context) => Menu(
+                                  resturant: resturants[0],
+                                )),
                       );
                     },
                   ),

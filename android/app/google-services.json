@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1089371192921",
+    "project_id": "radius-projectgraduation",
+    "storage_bucket": "radius-projectgraduation.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089371192921:android:aa0522c8b8d3faee88fb48",
+        "android_client_info": {
+          "package_name": "com.example.radius"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089371192921-2gvlp0mfq6m781i8tdtsn8haba1ke4bd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaZdiGwTGvfbvhWCXDcX_a0bXF0AhxF_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089371192921-2gvlp0mfq6m781i8tdtsn8haba1ke4bd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

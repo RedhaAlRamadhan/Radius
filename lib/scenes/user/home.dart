@@ -1,4 +1,3 @@
-// import 'dart:math';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
@@ -8,7 +7,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:latlong/latlong.dart' as latLng;
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-// import 'package:page_view_indicators/circle_page_indicator.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -172,20 +170,6 @@ class _Home extends State<Home> with WidgetsBindingObserver {
     }
   }
 
-  // int _compareParameters(Beacon a, Beacon b) {
-  //   int compare = a.proximityUUID.compareTo(b.proximityUUID);
-
-  //   if (compare == 0) {
-  //     compare = a.major.compareTo(b.major);
-  //   }
-
-  //   if (compare == 0) {
-  //     compare = a.minor.compareTo(b.minor);
-  //   }
-
-  //   return compare;
-  // }
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     print('AppLifecycleState = $state');
@@ -237,44 +221,36 @@ class _Home extends State<Home> with WidgetsBindingObserver {
               ),
             ],
           ),
-          Center(
-            child: Column(
-              verticalDirection: VerticalDirection.up,
-              children: [
-                found
-                    ? SingleChildScrollView(
-                        child: Container(
-                          width: size.width,
-                          height: size.height,
-                          child: Column(
-                            verticalDirection: VerticalDirection.up,
-                            children: <Widget>[
-                              ResturantList(
-                                list: resturantsList,
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : Column(
-                        children: [
-                          Container(
-                            child: Image.asset(
-                              "assets/gif/loader.gif",
-                              width: 100,
-                              height: 100,
+          Positioned(
+            child: Center(
+              child: Column(
+                verticalDirection: VerticalDirection.up,
+                children: [
+                  found
+                      ? SingleChildScrollView(
+                          child: Container(
+                            width: size.width,
+                            height: size.height,
+                            child: Column(
+                              verticalDirection: VerticalDirection.up,
+                              children: <Widget>[
+                                ResturantList(
+                                  list: resturantsList,
+                                ),
+                              ],
                             ),
                           ),
-                          // Text(
-                          //   'Scaning',
-                          //   style: TextStyle(fontSize: 30),
-                          // ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                        ],
-                      ),
-              ],
+                        )
+                      : Column(
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(
+                              height: 30,
+                            ),
+                          ],
+                        ),
+                ],
+              ),
             ),
           ),
         ],
