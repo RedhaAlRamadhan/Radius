@@ -69,7 +69,7 @@ List<Resturant> resturants = [
     uuid: 'F04CD654-871A-40E1-BA1A-A139B67DBDDD',
     imageURL:
         "https://media-exp1.licdn.com/dms/image/C4D1BAQHiiadfsLywxQ/company-background_10000/0/1574700179763?e=2159024400&v=beta&t=2HHIKg4kvOwUb78iEuiAePRtEMH-29Zh3fE1Y0noK34",
-    avaliable: false,
+    avaliable: true,
     isSaved: true,
     items: [
       Item(
@@ -101,7 +101,7 @@ List<Resturant> resturants = [
     uuid: 'CCE1CD20-0111-4466-9AEF-37FF3D842154',
     imageURL:
         "https://i.insider.com/52603e346bb3f7d610aaec3b?width=1100&format=jpeg&auto=webp",
-    avaliable: false,
+    avaliable: true,
     isSaved: true,
     items: [
       Item(

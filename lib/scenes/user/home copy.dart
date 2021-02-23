@@ -217,10 +217,10 @@ class _Home extends State<Home> with WidgetsBindingObserver {
               (BuildContext context, int index) {
                 return Container(
                   child: ResturantCard(
-                      resturant: resturants[index], onPress: null),
+                      resturant: resturants[index % 3], onPress: null),
                 );
               },
-              childCount: 3,
+              childCount: 6,
             ),
           ),
         ],
@@ -269,7 +269,7 @@ class ResturantCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      height: 216,
+      height: 215,
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Stack(
         fit: StackFit.expand,
@@ -288,7 +288,7 @@ class ResturantCard extends StatelessWidget {
                       ],
                     )
                   : null,
-              color: (resturant.avaliable) ? null : Color(0xcb5e5e5f),
+              color: (resturant.avaliable) ? null : Color(0xc05e5e5f),
             ),
           ),
           (resturant.avaliable)
@@ -366,41 +366,49 @@ class TextRecent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 14,
-      left: 10,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            this.title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: size.width * 0.1,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Row(
-            children: [
-              SvgPicture.asset(
-                "assets/icons/hamburger.svg",
-                height: 40,
+    return Container(
+      child: Positioned(
+        bottom: 14,
+        left: 10,
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                this.title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: size.width * 0.1,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              SvgPicture.asset(
-                "assets/icons/chicken-leg.svg",
-                height: 40,
+              Container(),
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    "assets/icons/hamburger.svg",
+                    height: 40,
+                  ),
+                  Container(
+                    width: 2,
+                  ),
+                  SvgPicture.asset(
+                    "assets/icons/chicken-leg.svg",
+                    height: 40,
+                  ),
+                ],
               ),
+              // Text(
+              //   "Burger",
+              //   style: TextStyle(
+              //     color: Colors.white,
+              //     fontSize: size.width * 0.075,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
             ],
           ),
-          // Text(
-          //   "Burger",
-          //   style: TextStyle(
-          //     color: Colors.white,
-          //     fontSize: size.width * 0.075,
-          //     fontWeight: FontWeight.bold,
-          //   ),
-          // ),
-        ],
+        ),
       ),
     );
   }
