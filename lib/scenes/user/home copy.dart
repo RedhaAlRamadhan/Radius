@@ -3,13 +3,9 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:math';
 import 'dart:io' show Platform;
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:latlong/latlong.dart' as latLng;
-import 'package:latlong/latlong.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import 'package:location/location.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,10 +33,6 @@ class _Home extends State<Home> with WidgetsBindingObserver {
   bool authorizationStatusOk = false;
   bool locationServiceEnabled = false;
   bool bluetoothEnabled = false;
-
-  Location location;
-  LocationData _currentPosition;
-  latLng.LatLng currentLatLng = null;
 
   @override
   void initState() {
@@ -100,18 +92,6 @@ class _Home extends State<Home> with WidgetsBindingObserver {
   }
 
   initScanBeacon() async {
-    location = Location();
-
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      // print("${currentLocation.latitude} : ${currentLocation.longitude}");
-
-      setState(() {
-        currentLatLng.latitude = currentLocation.latitude;
-        currentLatLng.longitude = currentLocation.longitude;
-        // _currentPosition = currentLocation;
-      });
-    });
-
     await flutterBeacon.initializeScanning;
     await checkAllRequirements();
     if (!authorizationStatusOk ||
@@ -222,87 +202,25 @@ class _Home extends State<Home> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print(currentLatLng);
 
     return new Scaffold(
-      body: new Stack(
-        children: [
-          new FlutterMap(
-            options: new MapOptions(
-              interactive: true,
-              center: currentLatLng,
-              zoom: 10.0,
-            ),
-            layers: [
-              new TileLayerOptions(
-                  urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c']),
-              MarkerLayerOptions(
-                markers: [
-                  Marker(
-                      height: 200,
-                      width: 200,
-                      point: latLng.LatLng(25.449954, 49.585398),
-                      builder: (context) => Column(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(bottom: 3),
-                                child: Stack(
-                                  children: <Widget>[
-                                    BackgroundImage(
-                                      image: resturants[0].imageURL,
-                                    ),
-                                    DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(20)),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SvgPicture.asset(
-                                "assets/icons/marker.svg",
-                                width: 50,
-                                height: 50,
-                              ),
-                            ],
-                          ))
-                ],
-              ),
-            ],
-          ),
-          Positioned(
-            child: Center(
-              child: Column(
-                verticalDirection: VerticalDirection.up,
-                children: [
-                  found
-                      ? SingleChildScrollView(
-                          child: Container(
-                            width: size.width,
-                            height: size.height,
-                            child: Column(
-                              verticalDirection: VerticalDirection.up,
-                              children: <Widget>[
-                                ResturantList(
-                                  list: resturantsList,
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : Column(
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(
-                              height: 30,
-                            ),
-                          ],
-                        ),
-                ],
-              ),
+      backgroundColor: new Color(0xFF393e46),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: new Color(0xFF393e46),
+        title: const Text('Radius'),
+      ),
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return Container(
+                  child: ResturantCard(
+                      resturant: resturants[index], onPress: null),
+                );
+              },
+              childCount: 3,
             ),
           ),
         ],
@@ -323,7 +241,7 @@ class BackgroundImage extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Image.network(
         image,
@@ -350,59 +268,47 @@ class ResturantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: (resturant.avaliable) ? this.onPress : () {},
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              blurRadius: 10,
-              offset: Offset(-2, 0),
-              spreadRadius: 5.0,
+    return Container(
+      height: 216,
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          BackgroundImage(image: resturant.imageURL),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              gradient: (resturant.avaliable)
+                  ? LinearGradient(
+                      begin: Alignment(-0.2, 0.9),
+                      end: Alignment(0.0, 0.0),
+                      colors: <Color>[
+                        Color(0xd0000000),
+                        Color(0x00000000),
+                      ],
+                    )
+                  : null,
+              color: (resturant.avaliable) ? null : Color(0xcb5e5e5f),
             ),
-          ],
-        ),
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            BackgroundImage(image: resturant.imageURL),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                gradient: (resturant.avaliable)
-                    ? LinearGradient(
-                        begin: Alignment(0.0, 0.8),
-                        end: Alignment(0.0, 0.0),
-                        colors: <Color>[
-                          Color(0x90000000),
-                          Color(0x00000000),
-                        ],
-                      )
-                    : null,
-                color: (resturant.avaliable) ? null : Color(0xbb5e5e5e),
-              ),
-            ),
-            (resturant.avaliable)
-                ? Container()
-                : Positioned(
-                    top: 1,
-                    left: 10,
-                    child: Chip(
-                      label: Text('Unavailable'),
-                    ),
+          ),
+          (resturant.avaliable)
+              ? Container()
+              : Positioned(
+                  top: 3,
+                  left: 10,
+                  child: Chip(
+                    label: Text('Unavailable'),
                   ),
-            BookmarkButton(
-              active: resturant.isSaved,
-              onPress: this.onSaved,
-            ),
-            TextRecent(
-              size: size,
-              title: resturant.title,
-            ),
-          ],
-        ),
+                ),
+          BookmarkButton(
+            active: resturant.isSaved,
+            onPress: this.onSaved,
+          ),
+          TextRecent(
+            size: size,
+            title: resturant.title,
+          ),
+        ],
       ),
     );
   }
@@ -448,91 +354,6 @@ class BookmarkButton extends StatelessWidget {
   }
 }
 
-class ResturantList extends StatefulWidget {
-  final List<Resturant> list;
-
-  const ResturantList({
-    Key key,
-    @required this.list,
-  }) : super(key: key);
-
-  @override
-  _RecentListState createState() => _RecentListState(list);
-}
-
-class _RecentListState extends State<ResturantList> {
-  PageController _pageController;
-  final List<Resturant> list;
-  int initialPage = 0;
-
-  _RecentListState(this.list);
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(
-      viewportFraction: 0.9,
-      initialPage: initialPage,
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _pageController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        child: Stack(
-          children: [
-            AspectRatio(
-              aspectRatio: 1.5,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: list.length,
-                itemBuilder: (context, index) => buildResturantSlider(index),
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.only(top: 10),
-                child: Center(
-                  child: SmoothPageIndicator(
-                    controller: _pageController,
-                    count: list.length,
-                    effect: WormEffect(
-                        spacing: 8.0,
-                        dotWidth: 10.0,
-                        dotHeight: 10.0,
-                        activeDotColor: Colors.black),
-                  ),
-                ))
-          ],
-        ));
-  }
-
-  Widget buildResturantSlider(int index) {
-    return ResturantCard(
-      resturant: widget.list[index],
-      isSaved: widget.list[index].isSaved,
-      onSaved: () {
-        setState(() {
-          widget.list[index].isSaved = !(widget.list[index].isSaved);
-        });
-      },
-      onPress: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Menu(resturant: list[index])),
-        );
-        // print(list[index]);
-      },
-    );
-  }
-}
-
 class TextRecent extends StatelessWidget {
   final String title;
   final Size size;
@@ -546,7 +367,7 @@ class TextRecent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 5,
+      bottom: 14,
       left: 10,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -559,6 +380,26 @@ class TextRecent extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          Row(
+            children: [
+              SvgPicture.asset(
+                "assets/icons/hamburger.svg",
+                height: 40,
+              ),
+              SvgPicture.asset(
+                "assets/icons/chicken-leg.svg",
+                height: 40,
+              ),
+            ],
+          ),
+          // Text(
+          //   "Burger",
+          //   style: TextStyle(
+          //     color: Colors.white,
+          //     fontSize: size.width * 0.075,
+          //     fontWeight: FontWeight.bold,
+          //   ),
+          // ),
         ],
       ),
     );
